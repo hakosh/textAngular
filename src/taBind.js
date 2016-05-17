@@ -491,7 +491,7 @@ angular.module('textAngular.taBind', ['textAngular.factories', 'textAngular.DOM'
 					// all the code specific to contenteditable divs
 					var _processingPaste = false;
 					/* istanbul ignore next: phantom js cannot test this for some reason */
-					var processpaste = function(text) {
+					var processpaste = function(text, event) {
                         var _isOneNote = text.match(/content=["']*OneNote.File/i);
 						/* istanbul ignore else: don't care if nothing pasted */
                         //console.log(text);
@@ -644,7 +644,7 @@ angular.module('textAngular.taBind', ['textAngular.factories', 'textAngular.DOM'
 								return result;
 							}).replace(/\n|\r\n|\r/g, '<br />').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
 
-							if(_pasteHandler) text = _pasteHandler(scope, {$html: text}) || text;
+							if(_pasteHandler) text = _pasteHandler(scope, {$html: text, $event: event}) || text;
 
 							text = taSanitize(text, '', _disableSanitizer);
 
@@ -686,7 +686,7 @@ angular.module('textAngular.taBind', ['textAngular.factories', 'textAngular.DOM'
 								pastedContent = clipboardData.getData('text/plain');
 							}
 
-							processpaste(pastedContent);
+							processpaste(pastedContent, e);
 							e.stopPropagation();
 							e.preventDefault();
 							return false;
@@ -698,7 +698,7 @@ angular.module('textAngular.taBind', ['textAngular.factories', 'textAngular.DOM'
 							$timeout(function(){
 								// restore selection
 								rangy.restoreSelection(_savedSelection);
-								processpaste(_tempDiv[0].innerHTML);
+								processpaste(_tempDiv[0].innerHTML, e);
 								element[0].focus();
 								_tempDiv.remove();
 							}, 0);
